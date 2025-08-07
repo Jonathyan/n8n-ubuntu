@@ -9,7 +9,7 @@ services:
     
     env_file:
       - .env
-    
+    `
     environment:
       # Core Configuration
       - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}

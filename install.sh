@@ -124,7 +124,7 @@ N8N_PROTOCOL=http
 # Authentication
 N8N_BASIC_AUTH_ACTIVE=true
 N8N_BASIC_AUTH_USER=admin
-N8N_BASIC_AUTH_PASSWORD="generate-secure-password-here"
+N8N_BASIC_AUTH_PASSWORD="$secure_password"
 
 # System Information
 NUC_IP_ADDRESS="$ip_address"
