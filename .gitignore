@@ -1,0 +1,44 @@
+# Environment secrets
+.env
+.env.local
+.env.*.local
+secrets/
+
+# n8n data
+data/
+*.sqlite
+*.sqlite-*
+
+# Logs
+logs/*.log
+*.log
+
+# Backups (may contain sensitive data)
+backups/
+backups/*.json
+backups/*.sql
+backups/*.tar.gz
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Runtime files
+*.pid
+node_modules/
+
+# Docker
+.docker/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+data/

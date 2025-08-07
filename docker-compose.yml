@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n-automation
+    restart: unless-stopped
+    
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    
+    env_file:
+      - .env
+    
+    environment:
+      # Core Configuration
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD_FILE=/run/secrets/n8n_password
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      
+      # Localization
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - N8N_DEFAULT_LOCALE=${N8N_DEFAULT_LOCALE}
+      
+      # Performance (Intel NUC Optimized)
+      - N8N_PAYLOAD_SIZE_MAX=${N8N_PAYLOAD_SIZE_MAX}
+      - EXECUTIONS_TIMEOUT=${EXECUTIONS_TIMEOUT}
+      - EXECUTIONS_TIMEOUT_MAX=${EXECUTIONS_TIMEOUT_MAX}
+      
+      # Logging
+      - N8N_LOG_LEVEL=${N8N_LOG_LEVEL}
+      - N8N_METRICS=${N8N_METRICS}
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=${EXECUTIONS_DATA_SAVE_ON_ERROR}
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=${EXECUTIONS_DATA_SAVE_ON_SUCCESS}
+      - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_DATA_MAX_AGE}
+      
+      # Security
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE}
+      - N8N_JWT_AUTH_ACTIVE=${N8N_JWT_AUTH_ACTIVE}
+      
+      # Database
+      - DB_TYPE=sqlite
+      - DB_SQLITE_DATABASE=/home/node/.n8n/database.sqlite
+      
+      # Webhooks
+      - WEBHOOK_URL=http://${NUC_IP_ADDRESS:-localhost}:${N8N_PORT:-5678}/
+      
+      # User folder
+      - N8N_USER_FOLDER=/home/node/.n8n
+      
+    volumes:
+      # Persistent data
+      - n8n_data:/home/node/.n8n
+      
+      # File sharing
+      - ./shared:/data
+      
+      # Backup access
+      - ./backups:/backups:ro
+      
+      # Log persistence
+      - ./logs:/app/logs
+      
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 60s
+      
+    # Resource limits for Intel NUC
+    deploy:
+      resources:
+        limits:
+          memory: ${CONTAINER_MEMORY_LIMIT:-2g}
+          cpus: '${CONTAINER_CPU_LIMIT:-2.0}'
+        reservations:
+          memory: ${CONTAINER_MEMORY_RESERVATION:-512m}
+          cpus: '${CONTAINER_CPU_RESERVATION:-0.5}'
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true
+    
+    # User mapping for file permissions
+    user: "${PUID:-1000}:${PGID:-1000}"
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "${LOG_MAX_SIZE:-10m}"
+        max-file: "${LOG_MAX_FILES:-5}"
+
+    secrets:
+      - n8n_password
+
+volumes:
+  n8n_data:
+    driver: local
+    name: n8n_automation_data
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/n8n-automation/data
+
+secrets:
+  n8n_password:
+    file: ./secrets/password.txt
+
+networks:
+  default:
+    name: n8n-automation-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
