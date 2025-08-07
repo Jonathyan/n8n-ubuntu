@@ -102,10 +102,6 @@ volumes:
       o: bind
       device: /opt/n8n-automation/data
 
-secrets:
-  n8n_password:
-    file: ./secrets/password.txt
-
 networks:
   default:
     name: n8n-automation-network

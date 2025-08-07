@@ -135,6 +135,10 @@ MEMORY_GB="$mem_gb"
 GENERIC_TIMEZONE=Europe/Amsterdam
 N8N_DEFAULT_LOCALE=en
 
+# Security Settings
+N8N_SECURE_COOKIE=false
+N8N_JWT_AUTH_ACTIVE=false
+
 # Performance Settings (Intel NUC Optimized)
 N8N_PAYLOAD_SIZE_MAX=8
 EXECUTIONS_TIMEOUT=180
