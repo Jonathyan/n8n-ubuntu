@@ -42,7 +42,6 @@ sudo ./install.sh
 | `cleanup.sh` | Disk space cleanup |
 | `update.sh` | Update to latest n8n version |
 | `logs.sh` | Log viewer and manager |
-| `setup-secrets.sh` | Setup secure password management |
 
 ## ⚙️ Configuration
 
@@ -51,7 +50,7 @@ Environment variables in `.env`:
 ```bash
 # Authentication
 N8N_BASIC_AUTH_USER=admin
-# N8N_BASIC_AUTH_PASSWORD stored in secrets/password.txt
+N8N_BASIC_AUTH_PASSWORD=your-secure-password
 
 # Intel NUC Optimizations
 CONTAINER_MEMORY_LIMIT=2g
@@ -153,25 +152,13 @@ docker compose logs  # Container logs
 ## 🔐 Security
 
 - Basic authentication enabled by default
-- **Secure password storage:** Docker secrets in `secrets/password.txt` (chmod 600)
+- **Password storage:** Environment variable in `.env` file
 - Container runs as non-root user
 - Network isolation with custom bridge
 - Resource limits prevent system overload
 - Regular security updates via update.sh
 
-### Password Management
 
-```bash
-# Setup secure password storage
-./setup-secrets.sh
-
-# View current password
-cat secrets/password.txt
-
-# Change password
-echo "new-password" > secrets/password.txt
-docker compose restart
-```
 
 ## 🌐 Network Access
 
