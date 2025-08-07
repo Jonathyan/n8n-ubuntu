@@ -47,11 +47,11 @@ services:
       - WEBHOOK_URL=http://${NUC_IP_ADDRESS:-localhost}:${N8N_PORT:-5678}/
       
       # User folder
-      - N8N_USER_FOLDER=/home/node/.n8n
+      - N8N_USER_FOLDER=/home/node/
       
     volumes:
       # Persistent data
-      - n8n_data:/home/node/.n8n
+      - n8n_data:/home/node/
       
       # File sharing
       - ./shared:/data
@@ -101,6 +101,7 @@ volumes:
       type: none
       o: bind
       device: /opt/n8n-automation/data
+
 
 networks:
   default:
