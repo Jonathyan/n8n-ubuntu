@@ -2,12 +2,29 @@
 # setup-aliases.sh - Setup global aliases for n8n management scripts
 
 PROJECT_DIR="/opt/n8n-automation"
-ALIAS_FILE="$HOME/.bash_aliases"
 
-echo "🔗 Setting up n8n management aliases..."
+# Detect shell and set appropriate alias file
+if [[ "$SHELL" == *"zsh"* ]] || [[ -n "$ZSH_VERSION" ]]; then
+    ALIAS_FILE="$HOME/.zshrc"
+    SHELL_NAME="zsh"
+else
+    ALIAS_FILE="$HOME/.bash_aliases"
+    SHELL_NAME="bash"
+fi
+
+echo "🔗 Setting up n8n management aliases for $SHELL_NAME..."
 
 # Create aliases file if it doesn't exist
 touch "$ALIAS_FILE"
+
+# For bash, ensure .bash_aliases is sourced in .bashrc
+if [[ "$SHELL_NAME" == "bash" ]] && ! grep -q ".bash_aliases" "$HOME/.bashrc" 2>/dev/null; then
+    echo "" >> "$HOME/.bashrc"
+    echo "# Source bash aliases" >> "$HOME/.bashrc"
+    echo "if [ -f ~/.bash_aliases ]; then" >> "$HOME/.bashrc"
+    echo "    . ~/.bash_aliases" >> "$HOME/.bashrc"
+    echo "fi" >> "$HOME/.bashrc"
+fi
 
 # Remove existing n8n aliases
 sed -i '/# n8n management aliases/,/# end n8n aliases/d' "$ALIAS_FILE"
@@ -32,7 +49,11 @@ ALIASES
 echo "✅ Aliases added to $ALIAS_FILE"
 echo ""
 echo "🔄 Reload your shell or run:"
-echo "   source ~/.bash_aliases"
+if [[ "$SHELL_NAME" == "zsh" ]]; then
+    echo "   source ~/.zshrc"
+else
+    echo "   source ~/.bash_aliases"
+fi
 echo ""
 echo "📋 Available aliases:"
 echo "   start-n8n      # Start n8n"
